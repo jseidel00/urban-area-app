@@ -10,28 +10,47 @@ const ROOT_URL = "https://api.teleport.org/api/urban_areas/";
 
 function App() {
   const [urbanAreas, setUrbanAreas] = useState([]);
-  // const [scores, setScores] = useState([]);
+  const [scoreData, setScoreData] = useState([]);
 
   useEffect(() => {
+    let data = [];
     axios
       .get(ROOT_URL)
       .then((res) => {
         setUrbanAreas(res.data._links["ua:item"]);
       })
       .catch((err) => alert(err));
-    // console.log(urbanAreas);
 
-    // urbanAreas.map((area) => {
-    //   const url = area.href + "scores/";
-    //   // console.log(url);
-    //   axios
-    //     .get(url)
-    //     .then((res) => {
-    //       setScores(res.data.teleport_city_score);
-    //     })
-    //     .catch((err) => alert(err));
-    // });
-    // console.log(scores);
+    urbanAreas.map((area) => {
+      const currentArea = {
+        name: "",
+        href: "",
+        score: 0,
+        summary: "",
+        categories: [],
+      };
+      const url = area.href + "scores/";
+      currentArea.name = area.name;
+      currentArea.href = area.href;
+      axios
+        .get(url)
+        .then((res) => {
+          currentArea.score = res.data.teleport_city_score;
+          currentArea.summary = res.data.summary;
+          res.data.categories.map((item) => {
+            let newItem = {
+              color: item.color,
+              name: item.name,
+              score_out_of_10: item.score_out_of_10,
+            };
+            currentArea.categories = [...currentArea.categories, newItem];
+          });
+        })
+        .catch((err) => alert(err));
+      data = [...data, currentArea];
+    });
+    setScoreData(data);
+    console.log(scoreData);
   }, []);
 
   return (
