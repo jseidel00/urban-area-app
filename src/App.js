@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import axios from "axios";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
 import { Container } from "@material-ui/core";
+import { Route, Link, Switch } from "react-router-dom";
+
+import Home from "./pages/Home";
+import Details from "./pages/Details";
 
 const ROOT_URL = "https://api.teleport.org/api/urban_areas/";
 
@@ -50,25 +51,18 @@ function App() {
       data = [...data, currentArea];
     });
     setScoreData(data);
-    console.log(scoreData);
+    // console.log(scoreData);
   }, []);
 
   return (
     <div>
       <Container>
-        <h1>World Urban Areas Quality of Life App</h1>
-        <List>
-          {urbanAreas.map((area, index) => (
-            <ListItem
-              key={index}
-              // onClick={() => checkItem(item.id)}
-              role={undefined}
-            >
-              <ListItemText primary={area.name} />
-              <a>{area.href}scores/</a>
-            </ListItem>
-          ))}
-        </List>
+        <Switch>
+          <Route exact path="/">
+            <Home scoreData={scoreData} />
+          </Route>
+          <Route exact path="/details" component={Details} />
+        </Switch>
       </Container>
     </div>
   );
